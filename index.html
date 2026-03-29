@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NETREX+</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:#0b0b0f;color:#fff}
+header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.6) 60%,transparent 100%)}
+.logo{color:#e50914;font-weight:800;letter-spacing:1px;font-size:28px}
+
+.hero{height:62vh;display:flex;align-items:flex-end;padding:40px;background-image:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.2)),url('https://picsum.photos/1600/800?blur=2');background-size:cover;background-position:center}
+.hero h1{font-size:42px;margin:0 0 10px}
+.hero p{max-width:520px;opacity:.9;margin:0 0 16px}
+.hero button{background:#e50914;border:0;color:#fff;padding:12px 18px;border-radius:6px;cursor:pointer;font-weight:600}
+
+.container{padding:24px 32px}
+.section-title{font-size:20px;margin:10px 0 12px}
+.row{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px}
+.card{min-width:180px;height:260px;border-radius:12px;background-size:cover;background-position:center;position:relative;cursor:pointer;transition:.25s}
+.card:hover{transform:scale(1.08);box-shadow:0 10px 30px rgba(0,0,0,.7)}
+.card .label{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.7);padding:6px 10px;border-radius:6px;font-size:13px}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center}
+.modal{width:min(1000px,92vw);max-height:86vh;overflow:auto;background:#111;border-radius:14px;padding:18px}
+.modal h2{margin:0 0 10px}
+.episodes{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.ep{background:#1a1a22;border-radius:8px;padding:10px;text-align:center;cursor:pointer}
+.ep:hover{background:#262632}
+
+.player{margin-top:14px}
+video{width:100%;border-radius:10px}
+.close{position:absolute;right:18px;top:14px;font-size:22px;cursor:pointer;opacity:.8}
+
+footer{padding:24px 32px;opacity:.6}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">NETREX+</div>
+</header>
+
+<div class="hero">
+  <div>
+    <h1>Dizilerim</h1>
+    <p>3 farklı dizi, toplam 24 bölüm. Tıkla, seç, izle.</p>
+    <button onclick="openShow(0)">▶ Hemen İzle</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="section-title">Kütüphane</div>
+  <div class="row" id="showsRow"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+  <div class="close" onclick="closeModal(); event.stopPropagation()">✖</div>
+    <h2 id="showTitle"></h2>
+    <div class="episodes" id="episodes"></div>
+
+    <div class="player" id="player" style="display:none;">
+      <iframe id="videoFrame" width="100%" height="500" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// --- DİZİLER ---
+const shows = [
+  { title: 'Dizi 1', cover: 'https://i.pinimg.com/736x/83/a8/27/83a827c150d20a357739fba925a6dcd9.jpg', count: 4 },
+  { title: 'Dizi 2', cover: 'https://i.pinimg.com/736x/f0/91/1d/f0911d27b0d9786a56825d064dcc660a.jpg', count: 2 },
+  { title: 'Dizi 3', cover: 'https://i.pinimg.com/736x/ca/14/14/ca1414e98d1101a635fb5fc54779c020.jpg', count: 18 }
+];
+
+// --- DRIVE LİNKLERİ (BURAYA KENDİ LİNKLERİNİ KOY) ---
+const videoLinks = {
+  0: [
+    "https://drive.google.com/file/d/1AuLFqTHe_5Ah81BFa5rHXYgXl5XJGmJt/view",
+    "https://drive.google.com/file/d/1uxehFY7p0cRZLhitCVdHO9FYRx0GhUlw/view",
+    "https://drive.google.com/file/d/19VVwtgQ8IqkAqs2IRVgdmJuTNrkd6Prc/view",
+    "https://drive.google.com/file/d/19aZ9CJPQA77dSmnwr0IuM2XMkR7jUdmw/view"
+  ],
+
+  1: [
+    "https://drive.google.com/file/d/1xNwF0Pr2Aoo4R8SEbewYHYxfX-BgaAzC/view",
+    "https://drive.google.com/file/d/1WvzD4mIRz0ybPbNLrtQUswT4ISyAKJD4/view"
+  ],
+
+  2: [
+    "https://drive.google.com/file/d/17kXB-yeN6IdvGzghgIJpU3ckWi77aBeC/view",
+    "https://drive.google.com/file/d/1nxd-PBiFGPKNmOul_OUaXNDqi3pGIMrS/view?usp=sharing",
+    "https://drive.google.com/file/d/1xuJTiF2_AWmRxVjXcP9QRuWf_ks_g8PI/view?usp=sharing",
+    "https://drive.google.com/file/d/1cCQrdx3bOSGAga0f8mHfadSk9vo66o5m/view?usp=sharing",
+    "https://drive.google.com/file/d/1V3JqMSGOUcKGg7HtIttVo6_G-rSvpF-a/view?usp=sharing",
+    "https://drive.google.com/file/d/1H01xN7HJPv0e62ORVJQGIYAkxduNk7XE/view?usp=sharing",
+    "https://drive.google.com/file/d/1OEOWdkcRyeu5qiBHBEPFJaaDGaOtWKGV/view?usp=sharing",
+    "https://drive.google.com/file/d/13qpNEfegZevdamVB4HwIUMSCpxIjn1ai/view?usp=sharing",
+    "https://drive.google.com/file/d/1pHeFCdAzVIwK8A2rsvpu1slpkv-FF-JU/view?usp=sharing",
+    "https://drive.google.com/file/d/1r14l8eZtCy3oNPBgdnsJ7OPNI_62t6hJ/view?usp=sharing",
+    "https://drive.google.com/file/d/1dyZF3WLbh86ivfxW5I2iq-SJmOMrJS5Z/view?usp=sharing",
+    "https://drive.google.com/file/d/1ejGwOWzjsWt89p0sX5xEv48QGOHolJjU/view?usp=sharing",
+    "https://drive.google.com/file/d/1w5dHdZ2oO8w-tVXZRIDaQBtuV9ae6OfU/view?usp=sharing",
+    "https://drive.google.com/file/d/1G_-V9evUnCGJJodacw8BLqgzs0YLu4ML/view?usp=sharing",
+    "https://drive.google.com/file/d/1FfOzjFY_WtYndbzeKNp--1ZV1H0gk6c9/view?usp=sharing",
+    "https://drive.google.com/file/d/1Vu3mH4qCeMkSK3wpj3u_YdmrrmDHsjgT/view?usp=sharing",
+    "https://drive.google.com/file/d/18tTq5F5JrDbrU-omFeXKWawEyJB1UJdy/view?usp=sharing",
+    "https://drive.google.com/file/d/XXXX18/view"
+  ]
+};
+// --- UI ---
+const row = document.getElementById('showsRow');
+
+shows.forEach((s, i)=>{
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.style.backgroundImage = `url('${s.cover}')`;
+  el.innerHTML = `<div class="label">${s.title}</div>`;
+  el.onclick = ()=>openShow(i);
+  row.appendChild(el);
+});
+
+function openShow(i){
+  const s = shows[i];
+  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('showTitle').innerText = s.title + ` (${s.count} bölüm)`;
+
+  const eps = document.getElementById('episodes');
+  eps.innerHTML = '';
+
+  for(let e=0;e<s.count;e++){
+    const b = document.createElement('div');
+    b.className = 'ep';
+    b.innerText = `Bölüm ${e+1}`;
+    b.onclick = ()=>play(i, e);
+    eps.appendChild(b);
+  }
+}
+
+function play(i, e){
+  const link = videoLinks[i][e];
+
+  const frame = document.getElementById('videoFrame');
+  const player = document.getElementById('player');
+
+  // Google Drive linkini embed hale getir
+  const embed = link.replace("/view","/preview");
+
+  frame.src = embed;
+  player.style.display = 'block';
+}
+
+function closeModal(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('videoFrame').src = "";
+}
+</script>
+
+<footer>© 2026 NETREX+</footer>
+</body>
+</html>
