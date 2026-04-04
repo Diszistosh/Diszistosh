@@ -35,6 +35,15 @@ video{width:100%;border-radius:10px}
 .close{position:absolute;right:18px;top:14px;font-size:22px;cursor:pointer;opacity:.8}
 
 footer{padding:24px 32px;opacity:.6}
+
+.coming-soon{
+  position:absolute;
+  bottom:35px;
+  left:10px;
+  color:red;
+  font-size:14px;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -74,7 +83,8 @@ footer{padding:24px 32px;opacity:.6}
 const shows = [
   { title: 'Haymun Netre', cover: 'https://i.pinimg.com/736x/83/a8/27/83a827c150d20a357739fba925a6dcd9.jpg', count: 4 },
   { title: 'Vakkas Remastered', cover: 'https://i.pinimg.com/736x/f0/91/1d/f0911d27b0d9786a56825d064dcc660a.jpg', count: 2 },
-  { title: 'Maniac Moruq', cover: 'https://i.pinimg.com/736x/cc/a5/bf/cca5bfa0349935f778e1ad623cf9d6cf.jpg', count: 18 }
+  { title: 'Maniac Moruq', cover: 'https://i.pinimg.com/736x/cc/a5/bf/cca5bfa0349935f778e1ad623cf9d6cf.jpg', count: 18 },
+  { title: 'Ehlen ve Sehlen', cover: 'https://i.pinimg.com/736x/f6/1b/68/f61b68fb66f7599915e69808065f84ea.jpg', count: 0 }
 ];
 
 // --- DRIVE LİNKLERİ (BURAYA KENDİ LİNKLERİNİ KOY) ---
@@ -120,6 +130,11 @@ shows.forEach((s, i)=>{
   el.className = 'card';
   el.style.backgroundImage = `url('${s.cover}')`;
   el.innerHTML = `<div class="label">${s.title}</div>`;
+
+  if(s.title === "Ehlen ve Sehlen"){
+    el.innerHTML += `<div class="coming-soon">Çok Yakında!</div>`;
+  }
+
   el.onclick = ()=>openShow(i);
   row.appendChild(el);
 });
@@ -147,7 +162,6 @@ function play(i, e){
   const frame = document.getElementById('videoFrame');
   const player = document.getElementById('player');
 
-  // Google Drive linkini embed hale getir
   const embed = link.replace("/view","/preview");
 
   frame.src = embed;
@@ -160,6 +174,6 @@ function closeModal(){
 }
 </script>
 
-<footer>© 2026 NETREX+</footer>
+<footer>© 2026 DİZİNATİON+</footer>
 </body>
 </html>
