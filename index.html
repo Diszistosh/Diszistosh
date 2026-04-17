@@ -158,12 +158,15 @@ function openShow(i){
 }
 
 function play(i, e){
-  const link = videoLinks[i][e];
+  if(!videoLinks[i] || !videoLinks[i][e]){
+    alert("Bu bölümde video yok");
+    return;
+  }
 
   const frame = document.getElementById('videoFrame');
   const player = document.getElementById('player');
 
-  const embed = link.replace("/view","/preview");
+  const embed = videoLinks[i][e].replace("/view","/preview");
 
   frame.src = embed;
   player.style.display = 'block';
