@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DİZİNATİON+</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:#0b0b0f;color:#fff}
+
+/* HEADER */
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 32px;
+  background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.6) 60%,transparent 100%);
+}
+.logo{
+  color:#e50914;
+  font-weight:800;
+  font-size:28px;
+}
+.wikiBtn{
+  background:#fff;
+  color:#000;
+  border:0;
+  padding:8px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* APP */
+.hero{
+  height:62vh;
+  display:flex;
+  align-items:flex-end;
+  padding:40px;
+  background-image:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.2)),url('https://picsum.photos/1600/800?blur=2');
+  background-size:cover;
+  background-position:center;
+}
+.hero h1{font-size:42px;margin:0 0 10px}
+.hero p{max-width:520px;opacity:.9;margin:0 0 16px}
+.hero button{background:#e50914;border:0;color:#fff;padding:12px 18px;border-radius:6px;cursor:pointer;font-weight:600}
+
+.container{padding:24px 32px}
+.section-title{font-size:20px;margin:10px 0 12px}
+.row{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px}
+.card{
+  min-width:180px;height:260px;border-radius:12px;
+  background-size:cover;background-position:center;
+  position:relative;cursor:pointer;transition:.25s;
+}
+.card:hover{transform:scale(1.08);box-shadow:0 10px 30px rgba(0,0,0,.7)}
+.card .label{
+  position:absolute;left:10px;bottom:10px;
+  background:rgba(0,0,0,.7);
+  padding:6px 10px;border-radius:6px;font-size:13px;
+}
+
+.coming-soon{
+  position:absolute;
+  bottom:35px;
+  left:10px;
+  color:red;
+  font-size:14px;
+  font-weight:bold;
+}
+
+/* MODAL */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:30;
+}
+.modal{
+  width:min(1000px,92vw);
+  max-height:86vh;
+  overflow:auto;
+  background:#111;
+  border-radius:14px;
+  padding:18px;
+  position:relative;
+}
+.modal h2{margin:0 0 10px}
+.episodes{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;
+}
+.ep{
+  background:#1a1a22;
+  border-radius:8px;
+  padding:10px;
+  text-align:center;
+  cursor:pointer;
+}
+.ep:hover{background:#262632}
+
+.player{margin-top:14px}
+iframe{width:100%;height:500px;border-radius:10px}
+.close{
+  position:absolute;
+  right:18px;
+  top:14px;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* WIKI (senin verdiğin sistem) */
+#wikiApp{
+  display:none;
+  background:#f6f6f6;
+  color:#000;
+  min-height:100vh;
+}
+
+.wikiHeader{
+  background:#fff;
+  padding:10px 20px;
+  border-bottom:1px solid #ccc;
+}
+
+.wikiContainer{display:flex;}
+
+.sidebar{
+  width:220px;
+  background:#fff;
+  border-right:1px solid #ccc;
+  min-height:100vh;
+  padding:10px;
+}
+.sidebar a{
+  display:block;
+  padding:8px;
+  color:#0645ad;
+  text-decoration:none;
+  cursor:pointer;
+  font-size:14px;
+}
+.sidebar a:hover{text-decoration:underline}
+
+.content{flex:1;padding:20px}
+.article{
+  background:#fff;
+  padding:18px;
+  border:1px solid #ddd;
+}
+
+.infobox{
+  float:right;
+  width:260px;
+  border:1px solid #aaa;
+  background:#f8f9fa;
+  margin-left:15px;
+  font-size:13px;
+}
+.infobox img{width:100%}
+.infobox table{width:100%;border-collapse:collapse}
+.infobox td{padding:5px;border-bottom:1px solid #ddd}
+.infobox td:first-child{font-weight:bold}
+
+h2{
+  font-size:18px;
+  margin-top:18px;
+  border-bottom:1px solid #ccc;
+  padding-bottom:4px;
+}
+
+.char-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+  margin-top:8px;
+}
+.char-table th,.char-table td{
+  border:1px solid #ccc;
+  padding:6px;
+}
+.char-table th{background:#eee}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">DİZİNATİON+</div>
+  <button class="wikiBtn" onclick="toggleWiki()">Wikipedia</button>
+</header>
+
+<!-- ================= APP ================= -->
+<div id="app">
+
+<div class="hero">
+  <div>
+    <h1>Diziler</h1>
+    <p>Dünyanın en iyi dizi sitesi.</p>
+    <button onclick="openShow(0)">▶ Hemen İzle</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="section-title">Kütüphane</div>
+  <div class="row" id="showsRow"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="close" onclick="closeModal()">✖</div>
+    <h2 id="showTitle"></h2>
+    <div class="episodes" id="episodes"></div>
+
+    <div class="player" id="player" style="display:none;">
+      <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ================= WIKI ================= -->
+<div id="wikiApp">
+
+<div class="wikiHeader"><b>Dizi Wiki</b></div>
+
+<div class="wikiContainer">
+  <div class="sidebar">
+    <b>Diziler</b>
+    <a onclick="load('haymun')">Haymun Netre</a>
+    <a onclick="load('vakkas')">Vakkas Remastered</a>
+    <a onclick="load('maniac')">Maniac Moruq</a>
+  </div>
+
+  <div class="content">
+    <div class="article" id="article">
+      <h1>Bir dizi seç</h1>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+
+/* ===== TOGGLE ===== */
+function toggleWiki(){
+  const app = document.getElementById("app");
+  const wiki = document.getElementById("wikiApp");
+
+  if(wiki.style.display === "block"){
+    wiki.style.display = "none";
+    app.style.display = "block";
+  }else{
+    wiki.style.display = "block";
+    app.style.display = "none";
+  }
+}
+
+/* ===== DİZİLER (SİLİNMEDİ) ===== */
+const shows = [
+  { title: 'Haymun Netre', cover: 'https://i.pinimg.com/736x/22/68/fb/2268fbc1b8b7ee30988e1947ac3e77cc.jpg', count: 4 },
+  { title: 'Vakkas Remastered', cover: 'https://i.pinimg.com/736x/f0/91/1d/f0911d27b0d9786a56825d064dcc660a.jpg', count: 2 },
+  { title: 'Maniac Moruq', cover: 'https://i.pinimg.com/736x/cc/a5/bf/cca5bfa0349935f778e1ad623cf9d6cf.jpg', count: 18 },
+  { title: 'Ehlen ve Sehlen', cover: 'https://i.pinimg.com/736x/f6/1b/68/f61b68fb66f7599915e69808065f84ea.jpg', count: 0 },
+  { title: 'Kafa Koparanlar', cover: 'https://i.pinimg.com/736x/2e/59/3d/2e593db0d027eeef504e8aa00d3ba305.jpg', count: 0 }
+];
+
+/* ===== VİDEO LİNKLERİ (SİLİNMEDİ) ===== */
+const videoLinks = {
+  0: [
+    "https://drive.google.com/file/d/1AuLFqTHe_5Ah81BFa5rHXYgXl5XJGmJt/view",
+    "https://drive.google.com/file/d/1uxehFY7p0cRZLhitCVdHO9FYRx0GhUlw/view",
+    "https://drive.google.com/file/d/19VVwtgQ8IqkAqs2IRVgdmJuTNrkd6Prc/view",
+    "https://drive.google.com/file/d/19aZ9CJPQA77dSmnwr0IuM2XMkR7jUdmw/view"
+  ],
+  1: [
+    "https://drive.google.com/file/d/1xNwF0Pr2Aoo4R8SEbewYHYxfX-BgaAzC/view",
+    "https://drive.google.com/file/d/1WvzD4mIRz0ybPbNLrtQUswT4ISyAKJD4/view"
+  ],
+  2: [
+    "https://drive.google.com/file/d/1vdFq3qGDzXqC920iS2yxozD4rBHuOnFP/view?usp=sharing",
+    "https://drive.google.com/file/d/1agPDH3N-dVmjJNGzKYeZ81jCc9QwJ0fT/view?usp=sharing",
+    "https://drive.google.com/file/d/1NPGg2rKgJmB2Zz4qKVdKlOLTIFZoOwPG/view?usp=sharing",
+    "https://drive.google.com/file/d/1dOHeJnqTr8GpLzREy2yWbZl2DbPx1aSB/view?usp=sharing",
+    "https://drive.google.com/file/d/1mZFl2rg0g68Z3eqeHPnQexD5A7kHqkIk/view?usp=sharing",
+    "https://drive.google.com/file/d/17_eOxH1KBVB5GqaSHYUTyaqQXbkGlIWg/view?usp=sharing",
+    "https://drive.google.com/file/d/180vKUYVOqMrSSQxPEXsfxHCIZzinXKRA/view?usp=sharing",
+    "https://drive.google.com/file/d/1DSBD5hx4uR2GVqC6bhD0zMgWU6wHlFg8/view?usp=sharing",
+    "https://drive.google.com/file/d/1V5zqzCv_FRtANmpiT_GY7dOkN_4SXYhb/view?usp=sharing",
+    "https://drive.google.com/file/d/1YS0MPfUVVMzspKMp_VAwMrytlZ4Mz6qt/view?usp=sharing",
+    "https://drive.google.com/file/d/1GPYjBmBgsZSJ0av25sqfhIhK7Ddwwpc7/view?usp=sharing",
+    "https://drive.google.com/file/d/1LUzyhihbzeBH9-1W0p3ibj9LjqslMhAh/view?usp=sharing",
+    "https://drive.google.com/file/d/1al971U8YzjjIt4F5HVrr84UhQP_aNg5H/view?usp=sharing",
+    "https://drive.google.com/file/d/1sjVTbgxC4sI_dI1XyPYAdVObLU1lB2ZN/view?usp=sharing",
+    "https://drive.google.com/file/d/1FfOzjFY_WtYndbzeKNp--1ZV1H0gk6c9/view?usp=sharing",
+    "https://drive.google.com/file/d/1Vu3mH4qCeMkSK3wpj3u_YdmrrmDHsjgT/view?usp=sharing",
+    "https://drive.google.com/file/d/18tTq5F5JrDbrU-omFeXKWawEyJB1UJdy/view?usp=sharing",
+    "https://drive.google.com/file/d/XXXX18/view"
+  ]
+};
+
+/* ===== UI ===== */
+const row = document.getElementById('showsRow');
+
+shows.forEach((s, i)=>{
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.style.backgroundImage = `url('${s.cover}')`;
+  el.innerHTML = `<div class="label">${s.title}</div>`;
+
+  if(s.title === "Ehlen ve Sehlen"){
+    el.innerHTML += `<div class="coming-soon">Çok Yakında!</div>`;
+  }
+
+  el.onclick = ()=>openShow(i);
+  row.appendChild(el);
+});
+
+function openShow(i){
+  const s = shows[i];
+  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('showTitle').innerText = s.title + ` (${s.count} bölüm)`;
+
+  const eps = document.getElementById('episodes');
+  eps.innerHTML = '';
+
+  for(let e=0;e<s.count;e++){
+    const b = document.createElement('div');
+    b.className = 'ep';
+    b.innerText = `Bölüm ${e+1}`;
+    b.onclick = ()=>play(i, e);
+    eps.appendChild(b);
+  }
+}
+
+function play(i, e){
+  if(!videoLinks[i] || !videoLinks[i][e]){
+    alert("Bu bölümde video yok");
+    return;
+  }
+
+  const frame = document.getElementById('videoFrame');
+  const player = document.getElementById('player');
+
+  frame.src = videoLinks[i][e].replace("/view","/preview");
+  player.style.display = 'block';
+}
+
+function closeModal(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('videoFrame').src = "";
+}
+
+/* ===== WIKI DATA ===== */
+const wiki = {
+  haymun:{
+    title:"Haymun Netre",
+    image:"https://i.pinimg.com/736x/22/68/fb/2268fbc1b8b7ee30988e1947ac3e77cc.jpg",
+    info:{
+      Tür:"Aksiyon",
+      Yıl:"2026",
+      Sezon:"3",
+      Bölüm:"4"
+    },
+    text:`
+      <p><b>Haymun Netre</b>...</p>
+      <h2>Hikâye</h2>
+      <p>...</p>
+    `,
+    characters:[
+      ["...","Haymun","..."],
+      ["...","Netre","..."],
+      ["...","Sikik","..."],
+      ["...","Soluman","..."],
+      ["...","Arap Mahmut","..."]
+    ]
+  },
+
+  vakkas:{
+    title:"Vakkas Remastered",
+    image:"https://i.pinimg.com/736x/f0/91/1d/f0911d27b0d9786a56825d064dcc660a.jpg",
+    info:{Tür:"Aksiyon",Yıl:"2026",Sezon:"4",Bölüm:"2"},
+    text:`<p>...</p>`,
+    characters:[
+      ["Mehmet Kurt","Vakkas","Ana karakter"],
+      ["...","Nuri Baba","..."],
+      ["...","Osman","..."]
+    ]
+  },
+
+  maniac:{
+    title:"Maniac Moruq",
+    image:"https://i.pinimg.com/736x/cc/a5/bf/cca5bfa0349935f778e1ad623cf9d6cf.jpg",
+    info:{Tür:"Aksiyon",Yıl:"2024",Sezon:"5",Bölüm:"17"},
+    text:`<p>...</p>`,
+    characters:[
+      ["...","Moruq","..."],
+      ["...","Güney","..."],
+      ["...","Transit","..."]
+    ]
+  }
+};
+
+function load(id){
+  const d = wiki[id];
+
+  let info="";
+  for(let k in d.info){
+    info+=`<tr><td>${k}</td><td>${d.info[k]}</td></tr>`;
+  }
+
+  let charTable=`<table class="char-table">
+    <tr><th>Oyuncu</th><th>Karakter</th><th>Açıklama</th></tr>`;
+
+  d.characters.forEach(c=>{
+    charTable+=`<tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td></tr>`;
+  });
+
+  charTable+=`</table>`;
+
+  document.getElementById("article").innerHTML=`
+    <h1>${d.title}</h1>
+    <div class="infobox">
+      <img src="${d.image}">
+      <table>${info}</table>
+    </div>
+    ${d.text}
+    <h2>Karakterler</h2>
+    ${charTable}
+  `;
+}
+
+</script>
+
+</body>
+</html>
+
+</script>
+
+</body>
+</html>
